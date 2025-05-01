@@ -1,0 +1,33 @@
+[
+  {
+    "Question ID": "Q1",
+    "Reasoning Process": [
+      "Calculate Tuesday's production: 12 clay pots * 2 = 24 clay pots",
+      "Sum Monday and Tuesday totals: 12 + 24 = 36 clay pots",
+      "Subtract from weekly total to find Wednesday's production: 50 - 36 = 14 clay pots"
+    ],
+    "Final Answer": 14,
+    "Difficulty Classification": "Easy"
+  },
+  {
+    "Question ID": "Q2",
+    "Reasoning Process": [
+      "Calculate first-hour masks: 60 minutes / 4 minutes/mask = 15 masks",
+      "Calculate remaining time: 4 hours - 1 hour = 3 hours",
+      "Calculate masks for remaining hours: 3 * (60 minutes / 6 minutes/mask) = 30 masks",
+      "Total masks: 15 + 30 = 45 masks"
+    ],
+    "Final Answer": 45,
+    "Difficulty Classification": "Medium"
+  },
+  {
+    "Question ID": "Q3",
+    "Reasoning Process": [
+      "Calculate number of ties: 12 losses / 2 = 6 ties",
+      "Sum losses and ties: 12 + 6 = 18 games",
+      "Subtract from total games to find wins: 56 - 18 = 38 wins"
+    ],
+    "Final Answer": 38,
+    "Difficulty Classification": "Easy"
+  }
+]

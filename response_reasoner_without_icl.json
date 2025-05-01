@@ -1,0 +1,37 @@
+
+[
+  {
+    "Question ID": 1,
+    "Reasoning Process": [
+      "Nancy makes 12 pots on Monday.",
+      "On Tuesday, she makes twice as many as Monday: 12 * 2 = 24 pots.",
+      "Total pots made by Tuesday: 12 + 24 = 36.",
+      "Total pots by the end of the week (Wednesday): 50.",
+      "Pots made on Wednesday: 50 - 36 = 14."
+    ],
+    "Final Answer": "14",
+    "Difficulty Classification": "Easy"
+  },
+  {
+    "Question ID": 2,
+    "Reasoning Process": [
+      "First hour: 60 minutes / 4 minutes per mask = 15 masks.",
+      "Remaining 3 hours: 180 minutes / 6 minutes per mask = 30 masks.",
+      "Total masks: 15 + 30 = 45."
+    ],
+    "Final Answer": "45",
+    "Difficulty Classification": "Medium"
+  },
+  {
+    "Question ID": 3,
+    "Reasoning Process": [
+      "Total home games: 56.",
+      "Losses: 12.",
+      "Ties: 12 / 2 = 6.",
+      "Total losses + ties: 12 + 6 = 18.",
+      "Wins: 56 - 18 = 38."
+    ],
+    "Final Answer": "38",
+    "Difficulty Classification": "Easy"
+  }
+]

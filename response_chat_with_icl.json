@@ -1,0 +1,36 @@
+[
+  {
+    "Question ID": "Q1",
+    "Reasoning Process": [
+      "Calculate Tuesday's production: 12 clay pots * 2 = 24 clay pots",
+      "Sum Monday and Tuesday's production: 12 clay pots + 24 clay pots = 36 clay pots",
+      "Subtract Monday and Tuesday's production from total: 50 clay pots - 36 clay pots = 14 clay pots"
+    ],
+    "Final Answer": 14,
+    "Difficulty Classification": "Medium"
+  },
+
+{
+    "Question ID": "Q2",
+    "Reasoning Process": [
+      "Calculate face-masks made in the first hour: 60 minutes / 4 minutes per mask = 15 masks",
+      "Calculate remaining time: 4 hours - 1 hour = 3 hours",
+      "Convert remaining time to minutes: 3 hours * 60 minutes/hour = 180 minutes",
+      "Calculate face-masks made in the remaining time: 180 minutes / 6 minutes per mask = 30 masks",
+      "Sum total face-masks: 15 masks + 30 masks = 45 masks"
+    ],
+    "Final Answer": 45,
+    "Difficulty Classification": "Hard"
+  },
+
+{
+    "Question ID": "Q3",
+    "Reasoning Process": [
+      "Calculate number of ties: 12 losses / 2 = 6 ties",
+      "Sum losses and ties: 12 losses + 6 ties = 18 games",
+      "Subtract losses and ties from total games: 56 games - 18 games = 38 games"
+    ],
+    "Final Answer": 38,
+    "Difficulty Classification": "Easy"
+  }
+]
