@@ -1,0 +1,14 @@
+[
+    {
+        "question": "Nancy is crafting clay pots to sell. She creates 12 clay pots on Monday, twice as many on Tuesday, a few more on Wednesday, then ends the week with 50 clay pots. How many did she create on Wednesday?",
+        "answer": "On Tuesday, Nancy creates 12 clay pots * 2 = <<12*2=24>>24 clay plots.\nSo she created a combined total of 12 + 24 = <<12+24=36>>36 clay pots on Monday and Tuesday.\nSubtracting this from the number of clay pots she ended the week with means she must have created 50 \u2013 36 = <<50-36=14>>14 clay pots on Wednesday.\n#### 14"
+    },
+    {
+        "question": "For the first hour of work, Manolo can make face-masks at the rate of one every four minutes. Thereafter, he can make face-masks at the rate of one every six minutes. How many face-masks does Manola make in a four-hour shift?",
+        "answer": "He makes 60/4=<<60/4=15>>15 in the first hour\nHe makes 60/6=<<60/6=10>>10 in each subsequent hour\nThere are 4-1=<<4-1=3>>3 more hours in his shift\nHe makes 15+10*3=<<15+10*3=45>>45.\n#### 45"
+    },
+    {
+        "question": "The Tigers played 56 home games this year. They had 12 losses and half as many ties. How many games did they win?",
+        "answer": "The Tigers had 12 / 2 = <<12/2=6>>6 ties.\nThe Tigers had 56 - (12 + 6) = <<56-(12+6)=38>>38 wins.\n#### 38"
+    }
+]

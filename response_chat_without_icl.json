@@ -1,0 +1,43 @@
+
+{
+  "questions": [
+    {
+      "Question ID": 1,
+      "Reasoning Process": [
+        "Nancy creates 12 clay pots on Monday.",
+        "On Tuesday, she creates twice as many as Monday, which is 12 * 2 = 24 clay pots.",
+        "Let the number of clay pots created on Wednesday be x.",
+        "Total clay pots created over the three days: Monday + Tuesday + Wednesday = 12 + 24 + x = 36 + x.",
+        "The total number of clay pots at the end of the week is 50.",
+        "Therefore, 36 + x = 50.",
+        "Solving for x: x = 50 - 36 = 14."
+      ],
+      "Final Answer": "Nancy created 14 clay pots on Wednesday.",
+      "Difficulty Classification": "Easy"
+    },
+    {
+      "Question ID": 2,
+      "Reasoning Process": [
+        "Manolo makes face-masks at the rate of one every 4 minutes for the first hour (60 minutes).",
+        "Number of face-masks in the first hour: 60 minutes / 4 minutes per mask = 15 masks.",
+        "For the remaining 3 hours (180 minutes), he makes face-masks at the rate of one every 6 minutes.",
+        "Number of face-masks in the remaining 3 hours: 180 minutes / 6 minutes per mask = 30 masks.",
+        "Total face-masks made in the 4-hour shift: 15 (first hour) + 30 (remaining 3 hours) = 45 masks."
+      ],
+      "Final Answer": "Manolo makes 45 face-masks in a four-hour shift.",
+      "Difficulty Classification": "Medium"
+    },
+    {
+      "Question ID": 3,
+      "Reasoning Process": [
+        "The Tigers played a total of 56 home games.",
+        "They had 12 losses.",
+        "They had half as many ties as losses, which is 12 / 2 = 6 ties.",
+        "Total losses and ties: 12 (losses) + 6 (ties) = 18 games.",
+        "Number of games won: Total games - (losses + ties) = 56 - 18 = 38 games."
+      ],
+      "Final Answer": "The Tigers won 38 games.",
+      "Difficulty Classification": "Easy"
+    }
+  ]
+}
