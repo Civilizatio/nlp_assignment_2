@@ -14,6 +14,40 @@
 \usepackage{textcomp}
 \usepackage[T1]{fontenc}
 \usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily\small,
+    commentstyle=\color{gray}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    keywords={true,false,null},
+    keywordstyle=\color{blue}\ttfamily,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstdefinelanguage{python}{
+    basicstyle=\ttfamily\small,
+    commentstyle=\color{gray}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    keywords={True, False, None},
+    keywordstyle=\color{blue}\ttfamily,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
 
 \newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
@@ -36,51 +70,6 @@
 \newcommand{\boldUppercaseItalicGreek}[1]{\csname var\expandafter\@gobble\string#1\endcsname}
 \makeatother
 
-%% Sans Serif Greek
-\DeclareFontEncoding{LGR}{}{} % or load \usepackage{textgreek}
-\DeclareSymbolFont{sfgreek}{LGR}{cmss}{m}{n}
-\SetSymbolFont{sfgreek}{bold}{LGR}{cmss}{bx}{n}
-\DeclareMathSymbol{\salpha}{\mathord}{sfgreek}{`a}
-\DeclareMathSymbol{\sbeta}{\mathord}{sfgreek}{`b}
-\DeclareMathSymbol{\sgamma}{\mathord}{sfgreek}{`g}
-\DeclareMathSymbol{\sdelta}{\mathord}{sfgreek}{`d}
-\DeclareMathSymbol{\sepsilon}{\mathord}{sfgreek}{`e}
-\DeclareMathSymbol{\szeta}{\mathord}{sfgreek}{`z}
-\DeclareMathSymbol{\seta}{\mathord}{sfgreek}{`h}
-\DeclareMathSymbol{\stheta}{\mathord}{sfgreek}{`j}
-\DeclareMathSymbol{\siota}{\mathord}{sfgreek}{`i}
-\DeclareMathSymbol{\skappa}{\mathord}{sfgreek}{`k}
-\DeclareMathSymbol{\slambda}{\mathord}{sfgreek}{`l}
-\DeclareMathSymbol{\smu}{\mathord}{sfgreek}{`m}
-\DeclareMathSymbol{\snu}{\mathord}{sfgreek}{`n}
-\DeclareMathSymbol{\sxi}{\mathord}{sfgreek}{`x}
-\DeclareMathSymbol{\somicron}{\mathord}{sfgreek}{`o}
-\DeclareMathSymbol{\spi}{\mathord}{sfgreek}{`p}
-\DeclareMathSymbol{\srho}{\mathord}{sfgreek}{`r}
-\DeclareMathSymbol{\ssigma}{\mathord}{sfgreek}{`s}
-\DeclareMathSymbol{\stau}{\mathord}{sfgreek}{`t}
-\DeclareMathSymbol{\supsilon}{\mathord}{sfgreek}{`u}
-\DeclareMathSymbol{\sphi}{\mathord}{sfgreek}{`f}
-\DeclareMathSymbol{\schi}{\mathord}{sfgreek}{`q}
-\DeclareMathSymbol{\spsi}{\mathord}{sfgreek}{`y}
-\DeclareMathSymbol{\somega}{\mathord}{sfgreek}{`w}
-\let\svarepsilon\sepsilon
-\let\svartheta\stheta
-\let\svarpi\spi
-\let\svarrho\srho
-\DeclareMathSymbol{\svarsigma}{\mathord}{sfgreek}{`c}
-\let\svarphi\sphi
-\DeclareMathSymbol{\sGamma}{\mathalpha}{sfgreek}{`G}
-\DeclareMathSymbol{\sDelta}{\mathalpha}{sfgreek}{`D}
-\DeclareMathSymbol{\sTheta}{\mathalpha}{sfgreek}{`J}
-\DeclareMathSymbol{\sLambda}{\mathalpha}{sfgreek}{`L}
-\DeclareMathSymbol{\sXi}{\mathalpha}{sfgreek}{`X}
-\DeclareMathSymbol{\sPi}{\mathalpha}{sfgreek}{`P}
-\DeclareMathSymbol{\sSigma}{\mathalpha}{sfgreek}{`S}
-\DeclareMathSymbol{\sUpsilon}{\mathalpha}{sfgreek}{`U}
-\DeclareMathSymbol{\sPhi}{\mathalpha}{sfgreek}{`F}
-\DeclareMathSymbol{\sPsi}{\mathalpha}{sfgreek}{`Y}
-\DeclareMathSymbol{\sOmega}{\mathalpha}{sfgreek}{`W}
 
 %% Math symbol command
 \newcommand{\V}[1]{\bm{#1}} %%  vector
@@ -106,7 +95,7 @@
 \hrule
 \vspace{0.2cm}
 
-\section{Prompt Engirneering}
+\section{Prompt Engineering}
 
 \subsection{Designing a Unique and Challenging Prompt}
 \subsubsection{Model Selection}
@@ -181,6 +170,99 @@ Screen shots of the results are shown in Figure \ref{fig:4o_images} and Figure \
     \label{fig:dsr1_images}
 \end{figure}
 
+\subsection{In-Context Learning}
+
+\subsubsection{Questions Selection}
+
+I randomly select 3 questions from the \href{https://huggingface.co/datasets/openai/gsm8k}{GSM-8K}, which is a math problem dataset. The questions are as follows:(you can also find the questions in file \textbf{sampled\_examples.json})
+\begin{quote}
+    \textbf{Q1:} Nancy is crafting clay pots to sell. She creates 12 clay pots on Monday, twice as many on Tuesday, a few more on Wednesday, then ends the week with 50 clay pots. How many did she create on Wednesday?
+    
+    \textbf{Q2:} For the first hour of work, Manolo can make face-masks at the rate of one every four minutes. Thereafter, he can make face-masks at the rate of one every six minutes. How many face-masks does Manola make in a four-hour shift?
+    
+    \textbf{Q3:} The Tigers played 56 home games this year. They had 12 losses and half as many ties. How many games did they win?
+\end{quote}
+
+The answers are \textbf{14}, \textbf{45}, and \textbf{38} respectively. I test the three questions with model \textbf{Deepseek-V3} and \textbf{Deepseek-R1}.
+
+\subsubsection{Prompt Design}
+
+We need to design one prompt to solve the three questions, and the output should in structured format. So below is the prompt without examples:
+
+\begin{quote}
+    \textbf{System prompt:} You are a helpful assistant. Please solve the following three reasoning-based questions from the GSM-8K dataset. Provide a detailed step-by-step solution for each question to clearly show your logical process, and then state the final answer. Ensure the output is in a structured format, such as JSON, and includes the following fields:
+        \begin{itemize}
+            \item Question ID
+            \item Reasoning Process (a list)
+            \item Final Answer
+            \item Difficulty Classification
+        \end{itemize}
+
+        \textbf{User prompt:} Here are three reasoning-based questions from the GSM-8K dataset:  
+        \begin{enumerate}
+            \item Question: Nancy is crafting clay pots to sell. She creates 12 clay pots on Monday, twice as many on Tuesday, a few more on Wednesday, then ends the week with 50 clay pots. How many did she create on Wednesday?
+            \item Question: For the first hour of work, Manolo can make face-masks at the rate of one every four minutes. Thereafter, he can make face-masks at the rate of one every six minutes. How many face-masks does Manola make in a four-hour shift?
+            \item Question: The Tigers played 56 home games this year. They had 12 losses and half as many ties. How many games did they win?
+        \end{enumerate}
+        Please solve these questions step by step and provide the final answers.
+
+\end{quote}
+
+For few-shot learning, I slightly modify the system prompt which will not affect the results. The main change is to add two examples to the user prompt. The user prompt is as follows:
+
+\begin{quote}
+    \textbf{User prompt:} Here are demonstration examples of solving GSM-8K problems, followed by the questions you need to answer. Study the structure and reasoning style carefully:
+
+    \#\#\# Demonstration Example 1
+    \item **Question ID**: DEMO1  
+        \item **Question**: A bookstore sells 35 novels in the morning and twice as many in the afternoon. If they had 150 novels in stock at the start, how many remain unsold?  
+        \item **Reasoning Process**:  
+        \begin{itemize}
+            \item Calculate afternoon sales: 35 novels * 2 = 70 novels  
+            \item Sum total sales: 35 novels + 70 novels = 105 novels  
+            \item Subtract total sales from stock: 150 novels - 105 novels = 45 novels  
+        \end{itemize}
+        \item **Final Answer**: 45  
+        \item **Difficulty Classification**: Medium  
+
+        \#\#\# Demonstration Example 2
+        \item **Question ID**: DEMO2  
+        \item **Question**: A baker uses 2 cups of flour for each loaf of bread. If she has a 50-cup bag of flour and bakes 12 loaves, how many cups of flour remain?  
+        \item **Reasoning Process**:  
+        \begin{itemize}
+            \item Calculate flour used: 12 loaves * 2 cups/loaf = 24 cups  
+            \item Subtract used flour from total: 50 cups - 24 cups = 26 cups  
+        \end{itemize}
+        \item **Final Answer**: 26  
+        \item **Difficulty Classification**: Easy  
+
+    \#\#\# Now Solve These Questions
+    \begin{enumerate}
+        \item **Question ID**: Q1  
+            **Question**: Nancy is crafting clay pots to sell. She creates 12 clay pots on Monday, twice as many on Tuesday, a few more on Wednesday, then ends the week with 50 clay pots. How many did she create on Wednesday?  
+        \item **Question ID**: Q2  
+            **Question**: For the first hour of work, Manolo can make face-masks at the rate of one every four minutes. Thereafter, he can make face-masks at the rate of one every six minutes. How many face-masks does Manola make in a four-hour shift?  
+        \item **Question ID**: Q3  
+            **Question**: The Tigers played 56 home games this year. They had 12 losses and half as many ties. How many games did they win? 
+    \end{enumerate} 
+\end{quote}
+
+Of course, you can also find the prompt in the file \textbf{code/src/task\_icl.py}.
+
+\subsubsection{Results}
+
+The results can be found in the following files:
+\begin{itemize}
+    \item \textbf{response\_chat\_without\_icl.json}
+    \item \textbf{response\_chat\_with\_icl.json}
+    \item \textbf{response\_reasoner\_without\_icl.json}
+    \item \textbf{response\_reasoner\_with\_icl.json}
+\end{itemize}
+I am not going to show the results here because they are too long. However, I will explain the results and analyze the performance of the two models.
+
+The answers of the two models are all correct, and the reasoning process is also correct. This may be because the questions are simple and the models have been trained on these types of questions. However, we can see that for \textbf{Deepseek-V3} without in-context learning, the answer is not just a number, but a sentence. After we give it a few examples, the model can generate the answer in a structured format. Another interesting phenomenon is that the reasoning process will be similar to the examples after we give it a few examples. 
+
+So we can conclude that in-context learning can help the model to generate the answer in a structured format we need, and think in a similar way as the examples. However, the drawback is also obvious. The model will be "limited" by the examples, and we must think carefully about the examples we give.
 
 \printbibliography[heading=bibintoc, title={References}]
 

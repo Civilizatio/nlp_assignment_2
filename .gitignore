@@ -8,4 +8,4 @@
 *.bbl
 *.bcf
 *.run.xml
-
+*.bbl-SAVE-ERROR
