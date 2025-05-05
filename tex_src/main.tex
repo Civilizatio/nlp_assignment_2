@@ -423,8 +423,22 @@ The results of the three metrics of the two model are shown in Table \ref{tab:me
     \label{tab:metric_results}
 \end{table}
 
+\section{Modifying Qwen2.5}
 
+\begin{enumerate}
+    \item Learned position encoding: replace the rotary position embedding with a learned position embedding.
+    \item DyT: replace RMSNorm with DyT.
+    \item ReLU-Attention: replace all normalization layers with ReLU-Attention.
+    \item Layer-Dependent Attention: replace the standard causal attention with layer-dependent attention.
+\end{enumerate}
 
+For the first modification, we need to replace the rotary position embedding with a learned position embedding. Because there are two places using rotary position embedding, one is just after the embedding layer, and the other is in the attention layer. I think the one in the attention layer is not necessary to modify, because the rotary position embedding is used to calculate the attention score. So we only need to modify the one after the embedding layer.
+
+For the second and third modifications, we need to replace the RMSNorm with DyT and ReLU-Attention. These two modifications are simple.
+
+For the last modification, we need to replace the standard causal attention with layer-dependent attention. So I replace the causal attention with layer-dependent attention. 
+
+All these changes are in the file \textbf{code/src/modeling_qwen2.py}.
 
 
 \printbibliography[heading=bibintoc, title={References}]
