@@ -404,16 +404,25 @@ For we have $N_{layer}$ transformer layers, so the total FLOPs of the model is:
 The results of the three metrics of the two model are shown in Table \ref{tab:metric_results}. We can see that the model with GQA has a smaller model size and KV cache size, and lower FLOPs. So the model with GQA is more efficient than the model with multi-head attention. However, the efficiency comes from the reduction of the kv values. We reduce the number of kv values to $n_{kv}(<n_q)$, which may cause the model to lose some information. So we need to find a balance between the efficiency and the performance.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|c|}
         \hline
         \textbf{Metric} & \textbf{Multi-head Attention} & \textbf{GQA} \\ \hline
-        Model Size & $(V + L) \times d + N_{layer} \times (4 \times d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d$ & $(V + L) \times d + N_{layer} \times (2 \times n_{kv}/n_q \times d^2 + 2d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d$ \\ \hline
-        KV Cache Size & $4N_{layer}Ld^2$ & $4N_{layer}Ld^2(n_{kv}/n_q)$ \\ \hline
-        FLOPs & $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ & $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ \\ \hline
-    \end{tabular}
+        Model Size & 
+        $(V + L)d + N_{layer}(4d^2 + 2dd_{ff}+ 2d) + d$ & 
+        $(V + L) d + N_{layer}(2  n_{kv}/n_q  d^2 + 2d^2 + 2  d  d_{ff}+ 2 d) + d$ \\ \hline
+        KV Cache Size & 
+        $4N_{layer}Ld^2$ & 
+        $4N_{layer}Ld^2(n_{kv}/n_q)$ \\ \hline
+        FLOPs & 
+        $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ & 
+        $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ \\ \hline
+    \end{tabular}%
+    }
     \caption{Results of the three metrics}
     \label{tab:metric_results}
 \end{table}
+
 
 
 
