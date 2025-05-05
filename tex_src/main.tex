@@ -264,6 +264,160 @@ The answers of the two models are all correct, and the reasoning process is also
 
 So we can conclude that in-context learning can help the model to generate the answer in a structured format we need, and think in a similar way as the examples. However, the drawback is also obvious. The model will be "limited" by the examples, and we must think carefully about the examples we give.
 
+\section{NLP Architecture Analysis}
+
+There are three metrics we need to compute: \textbf{model size}, \textbf{KV cache size}, and \textbf{FLOPs}. And I am going to compare GPT (with multi-head attention) and GPT with GQA (Grouped Query Attention). Let us analyze the three metrics one by one.
+
+\subsection{Model Size}
+
+We need to add up all trainable parameters in the model, containing the embedding parameters and transformer parameters. For simplicity, we assume that there is no bias.
+
+For the embedding parameters, we have token embedding and position embedding. The input token embedding size is $V \times d$, where $V$ is the vocabulary size and $d$ is the hidden size. Because we uses tied embeddings, output embedding layer share the same parameter as input embedding layer. The position embedding size is $L \times d$, where $L$ is the maximum sequence length. So the total embedding parameters are:
+
+\begin{equation}
+    \text{Embedding Parameters} = (V + L) \times d
+\end{equation}
+
+For transformer parameters, we only need to consider the multi-head attention layer and feed-forward layer of each transformer layer. The multi-head attention layer has three linear layers: query, key, and value. Because we use an attention head size that equals $d/n_h$, so the size of each linear layer is $n_h \times d \times (d / n_h)$. namely $d \times d$. And there is a linear layer for the output, which is also $d \times d$. 
+
+So the total parameters of the multi-head attention layer are:
+
+\begin{equation}
+    \text{Multi-head Attention Parameters} = 4 \times d \times d
+\end{equation}
+
+The feed-forward layer has two linear layers, and the size of each linear layer is $d \times d_{ff}$. So the total parameters of the feed-forward layer are:
+\begin{equation}
+    \text{Feed-forward Parameters} = 2 \times d \times d_{ff}
+\end{equation}
+
+For each transformer layer, we also have two layer normalization layers (one before the multi-head attention layer and one before the feed-forward layer). The size of each layer normalization layer is $d$. So the total parameters of each transformer layer are:
+
+\begin{equation}
+    \text{Transformer Layer Parameters} = 4 \times d^2 + 2 \times d \times d_{ff} + 2 \times d
+\end{equation}
+
+We have $N_{layer}$ transformer layers, so the total transformer parameters are:
+\begin{equation}
+    \text{Transformer Parameters} = N_{layer} \times (4 \times d^2 + 2 \times d \times d_{ff} + 2 \times d)
+\end{equation}
+
+Finally, there is one layer normalization layer before the output. We can get the total parameters of the model:
+\begin{equation}
+    \text{Total Parameters} = (V + L) \times d + N_{layer} \times (4 \times d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d
+\end{equation}
+
+For the model with GQA, the only difference is the multi-head attention layer. The size of linear layer for query is $ n_q \times d \times (d / n_q)$, where $n_q$ is the number of query groups. The size of linear layer for key and value is $n_{kv} \times d \times (d / n_q)$, where $n_{kv}$ is the number of key groups. So the total parameters of the multi-head attention layer are:
+
+\begin{align}
+    \text{Grouped Query Attention Parameters} &= n_q \times d \times (d / n_q) + 2 \times n_{kv} \times d \times (d / n_q) + d \times d \\
+    &= 2 \times n_{kv}/n_q \times d^2 + 2d^2
+\end{align}
+
+We can see that, if $n_{kv} = n_q$, the model size will be the same as the model with multi-head attention, and if $n_{kv} = 1$, which is the situation of MQA (Multi-Query Attention), the model size will be $2 \times d^2 + 2d^2/n_q$. GQA is the intermediate between MQA and multi-head attention. So the total parameters of the model with GQA are:
+\begin{equation}
+    \text{Total Parameters} = (V + L) \times d + N_{layer} \times (2 \times n_{kv}/n_q \times d^2 + 2d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d
+\end{equation}
+
+We can validate the model size with the settings of GPT2, which have the parameters as follows:
+
+\begin{itemize}
+    \item $V = 50257$
+    \item $L = 1024$
+    \item $d = 768$
+    \item $d_{ff} = 3072$
+    \item $N_{layer} = 12$
+    \item $n_q = 12$ 
+    \item $n_{kv} = 12$
+\end{itemize}
+
+The total parameters of the model with multi-head attention are:
+\begin{align}
+    \text{Total Parameters} &= (50257 + 1024) \times 768 + 12 \times (4 \times 768^2 + 2 \times 768 \times 3072 + 2 \times 768) + 768 \\
+    &= 124,337,664
+\end{align}
+Namely, 124M.
+
+\subsection{KV Cache Size}
+
+The KV cache is to store the key and value of each transformer layer of the previous time step when we do the inference. Because the key and value are calculated repeatedly. So, when we have $L$ time steps, we need to store $L$ keys and $L$ values. The size of each key and value is $L \times n_{kv} \times (d/n_q) $. So the total size of the KV cache is:
+
+\begin{align}
+    \text{KV Cache Size} &=N_{layer} \times (L \times n_{kv} \times (d/n_q) )\times  2 \times 2 \\
+    &= 4 \times N_{layer} \times L \times d \times (n_{kv}/n_q)
+\end{align}
+
+The first $2$ is for key and value, and the second $2$ is for the precision `bf16`.
+
+For Multi-head attention, $n_{kv} = n_q$, so the KV cache size is:
+\begin{align}
+    \text{KV Cache Size} &= 4 \times N_{layer} \times L \times d
+\end{align}
+
+For GQA, $n_{kv} < n_q$, so the KV cache size is smaller than the model with multi-head attention.
+
+\subsection{FLOPs}
+
+We only count Weight FLOPs, which is the mainly FLOPs in the model. Other layers such as layer normalization and softmax are negligible. Because we ignore the embedding lookup operation, we only need to consider the transformer layers.
+
+For attention part, we have the following FLOPs:
+
+\begin{itemize}
+    \item Calculate the query, key, and value: For query, we have $(L,d),(n_q,d,d/n_q) \to (n_q,L,d/n_q)$, so the FLOPs is $L \times n_q \times d/n_q \times 2d = 2Ld^2$. For key and value, we have $(L,d),(n_{kv},d,d/n_q) \to (n_{kv},L,d/n_q)$, so the FLOPs is $L \times n_{kv} \times d/n_q \times 2d = 2Ld^2(n_{kv}/n_q)$. So the total FLOPs is $2Ld^2 + 2Ld^2(n_{kv}/n_q) \times 2 = 2Ld^2 + 4Ld^2(n_{kv}/n_q)$.
+
+    \item Calculate the attention score: we have $(n_q,L,d/n_q),(n_{kv},L,d/n_q) \to (n_q,L,L)$, so the FLOPs is $n_q \times 2 \times L \times L \times d/n_q = 2L^2d$. However, when we take acount of the causal mask, we only need to calculate the lower triangular matrix, so the FLOPs is $n_q \times L(L+1)/2 \times 2 \times d/n_q = L^2d + Ld \approx L^2d$. (Actually, I am not sure about this. Although we only need to calculate the lower triangular matrix, we still need to calculate the whole matrix, then mask the upper triangular matrix. So I think the FLOPs is $2L^2d$. Since the hints in the homework say that we need to take into account the causal mask, I treat it as $L^2d$.)
+
+    \item Calculate the values: we have $(n_q,L,L),(n_{kv},L,d/n_q) \to (n_q,L,d/n_q)$, so the FLOPs is $n_q \times L \times  d/n_q \times 2L = 2L^2d$. When we take acount of the causal mask, we only need to calculate the lower triangular matrix, so the FLOPs is $L^2d$.
+
+    \item Calculate the output: we have $(L,d),(d,d) \to (L,d)$, so the FLOPs is $2Ld^2$.
+
+\end{itemize}
+
+So, the total FLOPs of the attention part is:
+\begin{align}
+    \text{Attention FLOPs} &= 2Ld^2 + 4Ld^2(n_{kv}/n_q) + L^2d + L^2d + 2Ld^2 \\
+    &= 4Ld^2 + 4Ld^2(n_{kv}/n_q) + 2L^2d
+\end{align}
+
+For the feed-forward part, we have the following FLOPs:
+
+\begin{align}
+    \text{Feed-forward FLOPs} &= 2\times 2 \times L \times d \times d_{ff} \\
+    &= 4Ld \times d_{ff}
+\end{align}
+
+So the total FLOPs of the transformer layer is:
+\begin{align}
+    \text{Transformer Layer FLOPs} &= 4Ld^2 + 4Ld^2(n_{kv}/n_q) + 2L^2d + 4Ld \times d_{ff} \\
+    &= 4Ld^2 + 4Ld^2(n_{kv}/n_q) + 2L^2d + 4Ldd_{ff}
+\end{align}
+
+For we have $N_{layer}$ transformer layers, so the total FLOPs of the model is:
+
+\begin{align}
+    \text{Total FLOPs} &= N_{layer} \times (4Ld^2 + 4Ld^2(n_{kv}/n_q) + 2L^2d + 4Ldd_{ff}) \\
+    &= 4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}
+\end{align}
+
+\subsection{Conclusion}
+
+The results of the three metrics of the two model are shown in Table \ref{tab:metric_results}. We can see that the model with GQA has a smaller model size and KV cache size, and lower FLOPs. So the model with GQA is more efficient than the model with multi-head attention. However, the efficiency comes from the reduction of the kv values. We reduce the number of kv values to $n_{kv}(<n_q)$, which may cause the model to lose some information. So we need to find a balance between the efficiency and the performance.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Metric} & \textbf{Multi-head Attention} & \textbf{GQA} \\ \hline
+        Model Size & $(V + L) \times d + N_{layer} \times (4 \times d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d$ & $(V + L) \times d + N_{layer} \times (2 \times n_{kv}/n_q \times d^2 + 2d^2 + 2 \times d \times d_{ff}+ 2 \times d) + d$ \\ \hline
+        KV Cache Size & $4N_{layer}Ld^2$ & $4N_{layer}Ld^2(n_{kv}/n_q)$ \\ \hline
+        FLOPs & $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ & $4N_{layer}Ld^2 + 4N_{layer}Ld^2(n_{kv}/n_q) + 2N_{layer}L^2d + 4N_{layer}Ldd_{ff}$ \\ \hline
+    \end{tabular}
+    \caption{Results of the three metrics}
+    \label{tab:metric_results}
+\end{table}
+
+
+
+
 \printbibliography[heading=bibintoc, title={References}]
 
 \end{document}
